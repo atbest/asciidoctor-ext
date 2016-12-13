@@ -13,22 +13,22 @@ default-theme: hljs_light
 
 # Theme specific attributes, will overide common attributes
 themes:
-   hljs_light:
-     stylesheet: asciidoctor
-     source-highlighter: highlight.js
-     highlighter-theme: atom-hljs
-   hljs_dark:
-      stylesheet: asciidoctor-dark
-      source-highlighter: highlight.js
-      highlighter-theme: monokai-hljs
-   prettify_light:
-      stylesheet: asciidoctor
-      source-highlighter: prettify
-      highlighter-theme: github-prettify
-   prettify_dark:
-     stylesheet: asciidoctor-dark
-     source-highlighter: prettify
-     highlighter-theme: monokai-prettify
+  hljs_light:
+    stylesheet: asciidoctor
+    source-highlighter: highlight.js
+    highlighter-theme: atom-hljs
+  hljs_dark:
+    stylesheet: asciidoctor-dark
+    source-highlighter: highlight.js
+    highlighter-theme: monokai-hljs
+  prettify_light:
+    stylesheet: asciidoctor
+    source-highlighter: prettify
+    highlighter-theme: github-prettify
+  prettify_dark:
+    stylesheet: asciidoctor-dark
+    source-highlighter: prettify
+    highlighter-theme: monokai-prettify
 
 # extensions to load
 extensions:

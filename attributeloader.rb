@@ -32,7 +32,7 @@ class AttributeLoaderPreprocessor < Asciidoctor::Extensions::Preprocessor
 
     opts = self.class.parse_config_file
 
-    unless opts     
+    unless opts || opts.empty?
       return reader
     end
 
@@ -70,7 +70,7 @@ class AttributeLoaderPreprocessor < Asciidoctor::Extensions::Preprocessor
     hl_theme = {'highlightjs' => 'highlightjs-theme', 'highlight.js' => 'highlightjs-theme', 'prettify' => 'prettify-theme'}
     hl_dir = {'highlightjs' => 'highlightjsdir', 'highlight.js' => 'highlightjsdir', 'prettify' => 'prettifydir'}
     
-    base_dir = document.attributes['common-dir'] || opts['common-dir'] || ''
+    base_dir = document.attributes['common-dir'] || opts['common-dir'] || '' # Must be absolute dir if use
     
     # Set document attributes
     attrib.each do |k, v|
@@ -78,10 +78,10 @@ class AttributeLoaderPreprocessor < Asciidoctor::Extensions::Preprocessor
       when 'highlighter-theme'
         document.attributes[hl_theme[highlighter]] = v unless document.attributes.has_key?( hl_theme[highlighter] )
       when 'highlighterdir'
-        v = resolver.system_path(v, base_dir) if base_dir != ''
+        v = resolver.system_path(v, base_dir) if resolver.is_root? base_dir
         document.attributes[hl_dir[highlighter]] = v unless document.attributes.has_key?( hl_dir[highlighter] )
       when 'stylesdir' # Use /dir$/  for all other dirs if necessary
-        v = resolver.system_path(v, base_dir) if base_dir != ''
+        v = resolver.system_path(v, base_dir) if resolver.is_root? base_dir
         document.attributes[k] = v
       when 'stylesheet'
         document.attributes[k] = v.end_with?(".css") ? v : v + '.css'
