@@ -32,7 +32,7 @@ class AttributeLoaderPreprocessor < Asciidoctor::Extensions::Preprocessor
 
     opts = self.class.parse_config_file
 
-    unless opts || opts.empty?
+    if opts.nil? || opts.empty?
       return reader
     end
 
@@ -104,7 +104,7 @@ end
 # Load other extensions
 resolver = Asciidoctor::PathResolver.new
 opts = AttributeLoaderPreprocessor.parse_config_file
-if opts && ! opts.empty?
+if opts && opts.has_key? 'extensions'
   opts['extensions'].each do |ext|
     ext['enabled'].each { |e| require resolver.system_path(e, ext['base_dir']) }
   end
