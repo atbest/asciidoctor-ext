@@ -1,0 +1,40 @@
+# Common attributes directly passed to asciidoctor
+common-attributes:
+  linkcss: true
+  hardbreaks: true
+  webfonts: false
+  copycss: true
+  sectids: true
+  nolang: true
+  highlighterdir: lib
+  stylesdir: styles
+
+default-theme: hljs_light
+
+# Theme specific attributes, will overide common attributes
+themes:
+   hljs_light:
+     stylesheet: asciidoctor
+     source-highlighter: highlight.js
+     highlighter-theme: atom-hljs
+   hljs_dark:
+      stylesheet: asciidoctor-dark
+      source-highlighter: highlight.js
+      highlighter-theme: monokai-hljs
+   prettify_light:
+      stylesheet: asciidoctor
+      source-highlighter: prettify
+      highlighter-theme: github-prettify
+   prettify_dark:
+     stylesheet: asciidoctor-dark
+     source-highlighter: prettify
+     highlighter-theme: monokai-prettify
+
+# extensions to load
+extensions:
+  - base_dir: E:\Data\asciidoctor\lib
+    enabled:
+      - protectemail
+      - hlterfix
+      - typeset
+
