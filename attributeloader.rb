@@ -18,13 +18,16 @@ class AttributeLoaderPreprocessor < Asciidoctor::Extensions::Preprocessor
     else  # Use default file
       confile = resolver.system_path('config-default.yml', File.dirname(__FILE__))
     end
-    unless File.file? confile
-      $stderr.puts "\nWarning: cannot find config file: #{confile}. Asciidoctor will use default attributes.\n" if cliargs[:verbose] > 0
+    
+    unless File.readable? confile
+      @@msg = "\nAsciidoctor Loader Error: Cannot find config file: #{confile}. Asciidoctor will use default attributes.\n"
       return nil
     end
     # Prepare attributes from config file
     require 'yaml'
-    YAML.load_file(confile)
+    opts = YAML.load_file(confile)
+    opts[:cli_trace] = cliargs[:trace]
+    return opts
   end
 
 
@@ -33,8 +36,10 @@ class AttributeLoaderPreprocessor < Asciidoctor::Extensions::Preprocessor
     opts = self.class.parse_config_file
 
     if opts.nil? || opts.empty?
+      $stderr.puts @@msg unless $VERBOSE.nil?
       return reader
     end
+
 
     cliargs = Asciidoctor::Cli::Options.parse! ARGV.clone
     resolver = Asciidoctor::PathResolver.new
@@ -50,7 +55,7 @@ class AttributeLoaderPreprocessor < Asciidoctor::Extensions::Preprocessor
     if opts['themes'].has_key? theme
       opts['themes'][theme].each { |k, v| attrib[k] = v unless cliargs[:attributes].has_key? k }
     else
-      $stderr.puts "\nWarning: Cannot find theme: #{theme}, ignoring theme." if cliargs[:verbose] > 0
+      $stderr.puts "\nAsciidoctor Loader Error: Cannot find theme: #{theme}, ignoring theme." unless $VERBOSE.nil?
     end
 
     # Force common source highlighter theme and dir attributes
@@ -100,12 +105,19 @@ end
 Asciidoctor::Extensions.register do
   preprocessor AttributeLoaderPreprocessor
 end
-
 # Load other extensions
 resolver = Asciidoctor::PathResolver.new
 opts = AttributeLoaderPreprocessor.parse_config_file
-if opts && opts.has_key? 'extensions'
+if opts && opts.has_key?('extensions')
   opts['extensions'].each do |ext|
-    ext['enabled'].each { |e| require resolver.system_path(e, ext['base_dir']) }
+    ext['enabled'].each do |e|
+      begin
+        e = resolver.system_path(e, ext['base_dir']) 
+        require e
+      rescue LoadError
+        $stderr.puts "\nAsciidoctor Loader Error: Cannot load extension: #{e}.\n\n" unless opts[:cli_trace]
+        raise # next
+      end
+    end
   end
 end
